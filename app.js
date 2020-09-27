@@ -30,7 +30,7 @@ app.get('/ideas/add', (req, res) => {
 });
 
 //Processing a Form input
-app.post('/ideas', (req, res) => {
+app.post('/ideas', async (req, res) => {
   const { title, details } = req.body;
   let errors = [];
   if (!title) {
@@ -47,7 +47,16 @@ app.post('/ideas', (req, res) => {
       details,
     });
   } else {
-    res.send('Sving to DB');
+    try {
+      const idea = await new Idea({
+        title,
+        details,
+      });
+      res.redirect('/ideas');
+      console.log(idea);
+    } catch (error) {
+      console.log(error);
+    }
   }
 });
 
