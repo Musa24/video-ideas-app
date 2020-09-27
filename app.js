@@ -25,12 +25,25 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
+//Fetching data from DB
+app.get('/ideas', (req, res) => {
+  Idea.find({})
+    .lean()
+    .sort({ date: 'desc' })
+    .then((ideas) => {
+      res.render('ideas/index', {
+        ideas,
+      });
+    });
+});
+
+//Add Form
 app.get('/ideas/add', (req, res) => {
   res.render('ideas/add');
 });
 
 //Processing a Form input
-app.post('/ideas', async (req, res) => {
+app.post('/ideas', (req, res) => {
   const { title, details } = req.body;
   let errors = [];
   if (!title) {
@@ -47,16 +60,14 @@ app.post('/ideas', async (req, res) => {
       details,
     });
   } else {
-    try {
-      const idea = await new Idea({
-        title,
-        details,
+    new Idea({
+      title,
+      details,
+    })
+      .save()
+      .then((idea) => {
+        res.redirect('/ideas');
       });
-      res.redirect('/ideas');
-      console.log(idea);
-    } catch (error) {
-      console.log(error);
-    }
   }
 });
 
