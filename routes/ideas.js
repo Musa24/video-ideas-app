@@ -4,8 +4,11 @@ const router = express.Router();
 //Load Models
 const Idea = require('../models/Idea');
 
+//HELPERS
+const { ensureAuthenticated } = require('../helpers/auth');
+
 //Fetching data from DB
-router.get('/', (req, res) => {
+router.get('/', ensureAuthenticated, (req, res) => {
   Idea.find({})
     .lean()
     .sort({ date: 'desc' })
@@ -17,12 +20,12 @@ router.get('/', (req, res) => {
 });
 
 //Add Form
-router.get('/add', (req, res) => {
+router.get('/add', ensureAuthenticated, (req, res) => {
   res.render('ideas/add');
 });
 
 //Processing a Form input
-router.post('/', (req, res) => {
+router.post('/', ensureAuthenticated, (req, res) => {
   const { title, details } = req.body;
   let errors = [];
   if (!title) {
@@ -52,7 +55,7 @@ router.post('/', (req, res) => {
 });
 
 //Edit Form
-router.get('/edit/:id', (req, res) => {
+router.get('/edit/:id', ensureAuthenticated, (req, res) => {
   const { id } = req.params;
 
   Idea.find({ _id: id })
@@ -63,7 +66,7 @@ router.get('/edit/:id', (req, res) => {
 });
 
 //Processing a Put request
-router.put('/:id', (req, res) => {
+router.put('/:id', ensureAuthenticated, (req, res) => {
   const { title, details } = req.body;
   const { id } = req.params;
   Idea.findByIdAndUpdate(
@@ -81,7 +84,7 @@ router.put('/:id', (req, res) => {
 });
 
 //DELETE IDEA
-router.delete('/:id', (req, res) => {
+router.delete('/:id', ensureAuthenticated, (req, res) => {
   const { id } = req.params;
   Idea.findByIdAndRemove({ _id: id }).then(() => {
     req.flash('success_msg', 'Idea is removed');
