@@ -103,6 +103,14 @@ app.put('/ideas/:id', (req, res) => {
   );
 });
 
+//DELETE IDEA
+app.delete('/ideas/:id', (req, res) => {
+  const { id } = req.params;
+  Idea.findByIdAndRemove({ _id: id }).then(() => {
+    res.redirect('/ideas');
+  });
+});
+
 app.listen(PORT, () => {
   console.log('The server is started');
 });
