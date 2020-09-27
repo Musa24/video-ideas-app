@@ -14,12 +14,41 @@ const Idea = require('./models/Idea');
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
+//express middleware
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
 app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/about', (req, res) => {
-  res.render('about');
+app.get('/ideas/add', (req, res) => {
+  res.render('ideas/add');
+});
+
+//Processing a Form input
+app.post('/ideas', (req, res) => {
+  const { title, details } = req.body;
+  let errors = [];
+  if (!title) {
+    errors.push({ text: 'Please add a title' });
+  }
+
+  if (!details) {
+    errors.push({ text: 'Please add a details' });
+  }
+  if (errors.length > 0) {
+    res.render('ideas/add', {
+      errors,
+      title,
+      details,
+    });
+  } else {
+    res.send('Sving to DB');
+  }
 });
 
 app.listen(PORT, () => {
