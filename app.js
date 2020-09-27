@@ -45,7 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 //methodOverride middleware
 app.use(methodOverride('_method'));
 
-//Set up public folder
+//Set up public folder (Express static folder)
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/about', (req, res) => {
