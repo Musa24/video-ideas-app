@@ -3,6 +3,7 @@ const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const session = require('express-session');
+const path = require('path');
 const app = express();
 
 const PORT = 5000;
@@ -43,6 +44,9 @@ app.use(express.urlencoded({ extended: true }));
 
 //methodOverride middleware
 app.use(methodOverride('_method'));
+
+//Set up public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/about', (req, res) => {
   res.render('about');
