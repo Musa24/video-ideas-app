@@ -1,12 +1,34 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
+const flash = require('connect-flash');
+const session = require('express-session');
 const app = express();
 
 const PORT = 5000;
 
 //Connect to the DB
 require('./config/db');
+
+//connect flash middleare
+app.use(flash());
+
+//express session middleware
+app.use(
+  session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+//GLOBAL VARIABLES
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
+});
 
 //Load Models
 const Idea = require('./models/Idea');
@@ -70,6 +92,7 @@ app.post('/ideas', (req, res) => {
     })
       .save()
       .then((idea) => {
+        req.flash('success_msg', 'Idea is created');
         res.redirect('/ideas');
       });
   }
@@ -97,6 +120,7 @@ app.put('/ideas/:id', (req, res) => {
       if (err) {
         console.log(err);
       } else {
+        req.flash('success_msg', 'Idea is updated');
         res.redirect('/ideas');
       }
     }
@@ -107,6 +131,7 @@ app.put('/ideas/:id', (req, res) => {
 app.delete('/ideas/:id', (req, res) => {
   const { id } = req.params;
   Idea.findByIdAndRemove({ _id: id }).then(() => {
+    req.flash('success_msg', 'Idea is removed');
     res.redirect('/ideas');
   });
 });
