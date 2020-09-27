@@ -4,6 +4,12 @@ const app = express();
 
 const PORT = 5000;
 
+//Connect to the DB
+require('./config/db');
+
+//Load Models
+const Idea = require('./models/Idea');
+
 //express handlebar middleware
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
