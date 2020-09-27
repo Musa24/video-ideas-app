@@ -7,8 +7,6 @@ const path = require('path');
 const passport = require('passport');
 const app = express();
 
-const PORT = 5000;
-
 //Connect to the DB
 require('./config/db');
 
@@ -70,6 +68,7 @@ app.get('/', (req, res) => {
 app.use('/ideas', ideas);
 app.use('/users', users);
 
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log('The server is started');
 });

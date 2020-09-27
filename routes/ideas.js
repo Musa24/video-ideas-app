@@ -9,7 +9,7 @@ const { ensureAuthenticated } = require('../helpers/auth');
 
 //Fetching data from DB
 router.get('/', ensureAuthenticated, (req, res) => {
-  Idea.find({})
+  Idea.find({ user: req.user.id })
     .lean()
     .sort({ date: 'desc' })
     .then((ideas) => {
@@ -45,6 +45,7 @@ router.post('/', ensureAuthenticated, (req, res) => {
     new Idea({
       title,
       details,
+      user: req.user.id,
     })
       .save()
       .then((idea) => {
@@ -61,7 +62,12 @@ router.get('/edit/:id', ensureAuthenticated, (req, res) => {
   Idea.find({ _id: id })
     .lean()
     .then((idea) => {
-      res.render('ideas/edit', { idea: idea[0] });
+      if (idea.user !== req.user.id) {
+        req.flash('error_msg', 'Not Authorized');
+        res.redirect('/ideas');
+      } else {
+        res.render('ideas/edit', { idea: idea[0] });
+      }
     });
 });
 
