@@ -1,5 +1,6 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const methodOverride = require('method-override');
 const app = express();
 
 const PORT = 5000;
@@ -16,6 +17,9 @@ app.set('view engine', 'handlebars');
 
 //express middleware
 app.use(express.urlencoded({ extended: true }));
+
+//methodOverride middleware
+app.use(methodOverride('_method'));
 
 app.get('/about', (req, res) => {
   res.render('about');
@@ -69,6 +73,34 @@ app.post('/ideas', (req, res) => {
         res.redirect('/ideas');
       });
   }
+});
+
+//Edit Form
+app.get('/ideas/edit/:id', (req, res) => {
+  const { id } = req.params;
+
+  Idea.find({ _id: id })
+    .lean()
+    .then((idea) => {
+      res.render('ideas/edit', { idea: idea[0] });
+    });
+});
+
+//Processing a Put request
+app.put('/ideas/:id', (req, res) => {
+  const { title, details } = req.body;
+  const { id } = req.params;
+  Idea.findByIdAndUpdate(
+    { _id: id },
+    { title, details },
+    (err, updatedIdea) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.redirect('/ideas');
+      }
+    }
+  );
 });
 
 app.listen(PORT, () => {
