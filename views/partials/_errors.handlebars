@@ -1,3 +1,11 @@
+{{!-- Error from Passport--}}
+{{#if error }}
+<div class="alert alert-danger" role="alert">
+    {{error}}
+</div>
+{{/if}}
+
+
 {{#each errors }}
 <div class="alert alert-danger" role="alert">
     {{text}}

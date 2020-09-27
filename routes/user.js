@@ -1,20 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-
+const passport = require('passport');
 //Loading model
 const User = require('../models/User');
-
-//Register
-router.get('/register', (req, res) => {
-  res.render('users/register');
-});
 
 //login
 router.get('/login', (req, res) => {
   res.render('users/login');
 });
+//Processing a Login request
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/ideas',
+    failureRedirect: '/users/login',
+    failureFlash: true,
+  })(req, res, next); //Immediately call the func
+});
 
+//Logout
+router.get('/logout', (req, res) => {
+  req.logout();
+  req.flash('success_msg', 'User logout');
+  res.redirect('/users/login');
+});
+
+//Register
+router.get('/register', (req, res) => {
+  res.render('users/register');
+});
 //Processing register request
 router.post('/register', (req, res) => {
   const { firstName, lastName, email, password, password1 } = req.body;
